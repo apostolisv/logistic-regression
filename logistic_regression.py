@@ -2,16 +2,13 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-
 from data import LoadData
 
-
-def read_train():
-    pass
+lamba = 1
 
 
-def read_test():
-    pass
+def sigmoid_function(theta, x):
+    return 1.0/(1 + np.exp(-np.dot(theta.T, x)))
 
 
 def train():
@@ -21,8 +18,10 @@ def train():
 def test():
     pass
 
+
 def cost():
     pass
+
 
 def logistic_regression():
     pass
@@ -30,5 +29,12 @@ def logistic_regression():
 
 
 load = LoadData()
+
+
+'''
 load.createDictionary()
 load.getVector('test', 'neg')
+load.getVector('test', 'pos')
+load.getVector('train', 'neg')
+load.getVector('train', 'pos')
+'''
