@@ -1,51 +1,50 @@
 #Binomial Logistic Regression
 
 import random
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from data import LoadData
 
 
 def sigmoid_function(x):
-    return abs(0.5 + (1.0/(1 + np.exp(-np.dot(weights.T, x)))))  #returns >= 0.5, if theta.T*x >= 0 [probability that y = 1]
-
-
-def train():
-    for i in range(m/2):
-        pass
-    for i in range(m/2):
-        pass
-
+    return 1.0/(1 + np.exp(-np.dot(weights.T, x)))  #returns >= 0.5, if theta.T*x >= 0 [probability that y = 1]
 
 
 def test():
     pass
 
 
-def jcost(theta, x, y):
+def jcost(x, y):
     c = 0
-    for i in range(1, m):
-        c += cost(sigmoid_function(theta, x), y)
-    return -c/m
+    for i in range(m):
+        c += cost(sigmoid_function(x), y)
+    return c/m
 
 
 def cost(h, y):
-    return np.mean(-y * np.log(h) - (1-y) * np.log(1-h))
+    return -y * np.log(h) - (1-y) * np.log(1-h)
 
 
 def sgd(train_list):            #Stochastic Gradient Descent
-    convergeRate = sys.maxsize
+    iterations = 0
+    max_iterations = 20
+    s = 0
+    h = 0.75 #learning rate
     for i in range(len(weights)):   #start with random weights
         weights[i] = random.randint(0, 50)
     random.shuffle(train_list)
-    i = 1
-    s = 0
-    s += jcost(weights, train_list[i], evaluate(train_list, i))
-    update_weights()
+    while iterations < max_iterations and converges(s, train_list):
+        iterations += 1
+        s = 0
+        for i in range(len(train_list)):
+            s += jcost(train_list[i], evaluate(train_list, i))
+            i += 1
+            for k in range(len(weights)):   #update weights
+                weight_update = 0
+                for j in range(m):
+                    weight_update += sigmoid_function(train_list[j] - evaluate(train_list, j)) * train_list[j][k]
+                weights[k] -= h * weight_update
 
-def logistic_regression():
-    pass
 
 
 def evaluate(train_list, pos):
@@ -54,21 +53,42 @@ def evaluate(train_list, pos):
     return 1
 
 
-def update_weights(train_list):
-    for i in range(len(weights)):
-        for j in range(1, m):
-            temp = sigmoid_function(train_list[j] - evaluate(train_list, j)) * train_list[j]
-        weights[i] -= a * temp
+def converges(s, train_list):
+    if s == 0:
+        return True
+    else:
+        x = 0
+        for i in range(len(train_list)):
+            x += jcost(train_list[i], evaluate(train_list, i))
+        if x > s:
+            return True
+        else:
+            return False
+
+
+def total():
+    total_cost = 0
+    for i in range(len(traindata)):
+        pass
 
 data = LoadData()
 data.createDictionary()
 
+print('Loading train1 data...\n')
 train1 = data.getVector('train', 'pos')
+print('Loading train0 data...\n')
 train0 = data.getVector('train', 'neg')
+print('Loading test1 data...\n')
 test1 = data.getVector('test', 'pos')
+print('Loading test0 data...\n')
 test0 = data.getVector('test', 'neg')
 m = len(train0) + len(train1)
-weights = len(train0[0]) * [0] #theta
+weights = len(train0[0]) * [0]
+
+traindata = train0 + train1
+random.shuffle(traindata)
+
+sgd(traindata)
 
 
 '''
