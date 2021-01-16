@@ -4,8 +4,7 @@ from collections import Counter
 
 class LoadData:
 
-    def __init__(self, mode=''):
-        self.mode = mode
+    def __init__(self):
         self.url = self.link()
         self.mostCommonWords = 15000 #input('Enter m (Most common words to keep): ')
         self.discardFirstWords = 50 #input('Enter n (Most common words to discard [n < m]): ')
