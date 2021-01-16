@@ -1,9 +1,9 @@
 from os import walk, path
 from collections import Counter
-import numpy as np
 
 
-class LoadFile:
+class LoadData:
+
     def __init__(self, mode=''):
         self.mode = mode
         self.url = self.link()
@@ -15,37 +15,42 @@ class LoadFile:
         return url
 
     def read_train(self):
-        train_url = self.url + '\\train'
-        return train_url
+        return self.url + '\\train'
 
     def read_test(self):
-        test_url = self.url + '\\test'
-        return test_url
+        return self.url + '\\test'
 
-    def getVector(self, data):
+    def getVector(self, data, type):   #Returns vector of vectors
         if data == 'test':
             url = self.read_test()+'\\'
-            w = ['neg', 'pos']
         elif data == 'train':
             url = self.read_train()+'\\'
-            w = ['neg', 'pos', 'unsup']
         else:
             return
+        if type != 'neg' and type != 'pos':
+            return
+        ls = []
+        vectors = []
+        vector = []
         f = []
-        vectors = np.array(np.zeros(self.mostCommonWords-self.discardFirstWords))
-        for i in w:
-            for (dirpath, folders, files) in walk(url+i):
-                f.extend(files)
-
-    def load_test(self):
-        pass
-
-    def load_train(self):
-        pass
+        for (dirpath, folders, files) in walk(url+type):
+            f.extend(files)
+        for j in f:
+            ls.extend(self.read_file(url + type + '\\' + j))
+            dc = open(self.url+'\\'+'dictionary.txt', encoding="utf-8")
+            line = dc.readline().strip()
+            while line:
+                if line in ls:
+                    vector.append(1)
+                else:
+                    vector.append(0)
+                line = dc.readline().strip()
+            vectors.append(vector)
+        return vectors
 
     def createDictionary(self):
         if not path.exists(self.url+'\\'+'dictionary.txt'):
-            w = ['neg', 'pos', 'unsup']
+            w = ['neg', 'pos']
             words = []
             for i in w:
                 for(dirpath, folders, files) in walk(self.read_train()+'\\'+i):
@@ -62,18 +67,9 @@ class LoadFile:
 
     def read_file(self, url):
         ls = []
-        txtfile = open(url, "r", encoding="utf-8")
-        line = txtfile.readline()
-        ls.extend(line.split())
+        file = open(url, "r", encoding="utf-8")
+        line = file.readline()
         while(line):
-            line = txtfile.readline()
             ls.extend(line.split())
+            line = file.readline()
         return ls
-
-
-
-
-    def exists(self, ls, word):
-        if(word in ls):
-            return True
-        return False

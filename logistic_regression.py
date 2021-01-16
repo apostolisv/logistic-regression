@@ -3,11 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from LoadFile import LoadFile
-
-url = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb'
-urltest = url + '\\test'
-urltrain = url + '\\train'
+from data import LoadData
 
 
 def read_train():
@@ -33,6 +29,6 @@ def logistic_regression():
 
 
 
-load = LoadFile()
-f = []
+load = LoadData()
 load.createDictionary()
+load.getVector('test', 'neg')
