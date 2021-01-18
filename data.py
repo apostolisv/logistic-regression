@@ -7,7 +7,7 @@ class LoadData:
     def __init__(self):
         self.url = self.link()
         self.mostCommonWords = 1000  # input('Enter m (Most common words to keep): ')
-        self.discardFirstWords = 50  # input('Enter n (Most common words to discard [n < m]): ')
+        self.discardFirstWords = 15  # input('Enter n (Most common words to discard [n < m]): ')
 
     def link(self):
         url = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb'  # input("Enter 'aclImdb' folder path: ")
@@ -26,8 +26,6 @@ class LoadData:
         elif data == 'train':
             url = self.read_train()+'\\'
         else:
-            return
-        if ctype != 'neg' and ctype != 'pos':
             return
         ls = []
         vectors = []
@@ -83,3 +81,17 @@ class LoadData:
             line = file.readline().strip()
         file.close()
         return ls
+
+
+    def getExternal(self, url):
+        vector = []
+        dc = open(self.url + '\\' + 'dictionary.txt', encoding="utf-8")
+        ls = self.read_file(url)
+        line = dc.readline().strip()
+        while line:
+            if line in ls:
+                vector.append(1)
+            else:
+                vector.append(0)
+            line = dc.readline().strip()
+        return vector
