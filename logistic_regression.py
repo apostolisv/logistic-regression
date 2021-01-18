@@ -2,14 +2,26 @@
 
 import random
 import numpy as np
-import os
 from data import LoadData
 from scipy.special import expit
 
 
+# Global variables
+m = 0
+train1 = []
+train0 = []
+train_data = []
+test1 = []
+test0 = []
+test_data = []
+weights = []
+dev_data = []
+data = LoadData()
+
+
 def logistic_function(x):
     xtemp = np.array(x[:-1])        # last element = category [y]
-    result = expit(-np.dot(weights, xtemp))  # same as 1.0/(1 + np.exp(-np.dot(weights.T, xtemp))) without overflow warning
+    result = expit(-np.dot(weights, xtemp))  # same as 1.0/(1 + np.exp(-np.dot(weights.T, xtemp))) without overflow
     if result == 1.0:
         return 0.99       # avoid log10 error due to overflow
     elif result == 0.0:
@@ -18,7 +30,7 @@ def logistic_function(x):
 
 
 def train():
-    global train0, train1, m, train_data, weights
+    global train0, train1, m, train_data, weights, dev_data
     input('press ENTER to create dictionary')
     data.createDictionary()
     input('press ENTER to load training data')
@@ -28,6 +40,8 @@ def train():
     train0.extend(data.getVector('train', 'neg'))
     train_data = train0 + train1
     random.shuffle(train_data)
+    dev_data = np.array([train_data[abs(len(train_data) * 90/100):]])   # 90:10 dev:train split
+    train_data = train_data[:abs(len(train_data)*90/100)]
     m = len(train_data)
     input('press ENTER to train')
     print('Calculating weights...')
@@ -84,26 +98,19 @@ def evaluate_test(pos):
     return test_data[pos][-1]
 
 
+def select_model():
+    pass
+
 def logistic_regression():
     train()
     test()
 
 
-# Global variables
-m = 0
-train1 = []
-train0 = []
-train_data = []
-test1 = []
-test0 = []
-test_data = []
-weights = []
-
-data = LoadData()
 logistic_regression()
 
 '''
 TO DO
 NORMALISATION
 TESTING
+dev data
 '''
