@@ -6,11 +6,11 @@ class LoadData:
 
     def __init__(self):
         self.url = self.link()
-        self.mostCommonWords = 15000 #input('Enter m (Most common words to keep): ')
-        self.discardFirstWords = 50 #input('Enter n (Most common words to discard [n < m]): ')
+        self.mostCommonWords = 1000  # input('Enter m (Most common words to keep): ')
+        self.discardFirstWords = 50  # input('Enter n (Most common words to discard [n < m]): ')
 
     def link(self):
-        url = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb' #input("Enter 'aclImdb' folder path: ")
+        url = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb'  # input("Enter 'aclImdb' folder path: ")
         return url
 
     def read_train(self):
@@ -19,23 +19,28 @@ class LoadData:
     def read_test(self):
         return self.url + '\\test'
 
-    def getVector(self, data, type):   #Returns vector of vectors
+    def getVector(self, data, ctype):   # Returns vector of vectors
+        monitor = 1
         if data == 'test':
             url = self.read_test()+'\\'
         elif data == 'train':
             url = self.read_train()+'\\'
         else:
             return
-        if type != 'neg' and type != 'pos':
+        if ctype != 'neg' and ctype != 'pos':
             return
         ls = []
         vectors = []
         vector = []
         f = []
-        for (dirpath, folders, files) in walk(url+type):
+        for (dirpath, folders, files) in walk(url+ctype):
             f.extend(files)
         for j in f:
-            ls.extend(self.read_file(url + type + '\\' + j))
+            ls.clear()
+            vector.clear()
+            #print(monitor)
+            monitor += 1
+            ls.extend(self.read_file(url + ctype + '\\' + j))
             dc = open(self.url+'\\'+'dictionary.txt', encoding="utf-8")
             line = dc.readline().strip()
             while line:
@@ -44,7 +49,12 @@ class LoadData:
                 else:
                     vector.append(0)
                 line = dc.readline().strip()
+            if ctype == 'neg':
+                vector.append(0)
+            else:
+                vector.append(1)
             vectors.append(vector)
+        dc.close()
         return vectors
 
     def createDictionary(self):
@@ -67,8 +77,9 @@ class LoadData:
     def read_file(self, url):
         ls = []
         file = open(url, "r", encoding="utf-8")
-        line = file.readline()
-        while(line):
+        line = file.readline().strip()
+        while line:
             ls.extend(line.split())
-            line = file.readline()
+            line = file.readline().strip()
+        file.close()
         return ls

@@ -2,108 +2,108 @@
 
 import random
 import numpy as np
+import os
 from data import LoadData
+from scipy.special import expit
 
 
-def sigmoid_function(x):
-    return 1.0/(1 + np.exp(-np.dot(weights.T, x)))  # returns >= 0.5, if theta.T*x >= 0 [probability that y = 1]
+def logistic_function(x):
+    xtemp = np.array(x[:-1])        # last element = category [y]
+    result = expit(-np.dot(weights, xtemp))  # same as 1.0/(1 + np.exp(-np.dot(weights.T, xtemp))) without overflow warning
+    if result == 1.0:
+        return 0.99       # avoid log10 error due to overflow
+    elif result == 0.0:
+        return 0.01
+    return result
 
 
 def train():
-    global train0, train1, m
-    print('Loading train1 data...\n')
+    global train0, train1, m, train_data, weights
+    input('press ENTER to create dictionary')
+    data.createDictionary()
+    input('press ENTER to load training data')
+    print('Loading positive train data...')
     train1.extend(data.getVector('train', 'pos'))
-    print('Loading train0 data...\n')
+    print('Loading negative train data...')
     train0.extend(data.getVector('train', 'neg'))
-    m = 10
+    train_data = train0 + train1
+    random.shuffle(train_data)
+    m = len(train_data)
+    input('press ENTER to train')
+    print('Calculating weights...')
+    weights = np.zeros(len(train_data[0])-1)
+    sgd()
 
 
 def test():
-    global test1, test0
+    global test1, test0, test_data
+    input('press ENTER to load testing data')
     print('Loading test1 data...\n')
     test1 = data.getVector('test', 'pos')
     print('Loading test0 data...\n')
     test0 = data.getVector('test', 'neg')
+    test_data = test0 + test1
+    random.shuffle(test_data)
+    input('press ENTER to test')
+    '''
+    TEST
+    '''
 
 
-def j_cost(x, y):
-    c = 0
+def cost():
+    total = 0.0
     for i in range(m):
-        c += cost(sigmoid_function(x), y)
-    return c/m
+        h = logistic_function(train_data[i])
+        y = evaluate(i)
+        total += y * np.log10(h) + (1 - y) * np.log10(1 - h)
+    return -total/m
 
 
-def cost(h, y):
-    return -y * np.log(h) - (1-y) * np.log(1-h)
-
-
-def sgd(train_list):            # Stochastic Gradient Descent
-    global weights
+def sgd():            # Stochastic Gradient Descent
+    global weights, train_data
     iterations = 0
-    max_iterations = 20
-    s = 0
-    h = 0.75  # learning rate
+    max_iterations = 400
+    a = 0.01  # learning rate
     for i in range(len(weights)):   # start with random weights
-        weights[i] = random.randint(0, 50)
-    random.shuffle(train_list)
-    while iterations < max_iterations and converges(s, train_list):
+        weights[i] = random.uniform(-0.2, 0.2)
+    while iterations < max_iterations:
+        print(cost())
+        random.shuffle(train_data)  # shuffle on every iteration
         iterations += 1
-        s = 0
-        for i in range(len(train_list)):
-            s += j_cost(train_list[i], evaluate(train_list, i))
-            i += 1
-            for k in range(len(weights)):   # update weights
-                weight_update = 0
-                for j in range(m):
-                    weight_update += sigmoid_function(train_list[j] - evaluate(train_list, j)) * train_list[j][k]
-                weights[k] -= h * weight_update
+        predicted_value = logistic_function(train_data[-1])
+        y = evaluate(-1)
+        for k in range(len(weights)):   # update weights
+            weights[k] -= a * (predicted_value - y) * train_data[-1][k]
 
 
-def evaluate(train_list, pos):
-    if train_list[pos] == train0[pos]:
-        return 0
-    return 1
+def evaluate(pos):
+    return train_data[pos][-1]
 
 
-def converges(s, train_list):
-    if s == 0:
-        return True
-    else:
-        x = 0
-        for i in range(len(train_list)):
-            x += j_cost(train_list[i], evaluate(train_list, i))
-        if x > s:
-            return True
-        else:
-            return False
+def evaluate_test(pos):
+    return test_data[pos][-1]
 
 
-def total():
-    total_cost = 0
-    for i in range(len(train_data)):
-        pass
+def logistic_regression():
+    train()
+    test()
 
 
-data = LoadData()
-data.createDictionary()
-
-
+# Global variables
+m = 0
 train1 = []
 train0 = []
-m = 0
+train_data = []
 test1 = []
 test0 = []
+test_data = []
+weights = []
 
-weights = np.zeros(len(train0[0]))
-
-train_data = train0 + train1
-random.shuffle(train_data)
-
-sgd(train_data)
-
+data = LoadData()
+logistic_regression()
 
 '''
-xi = vector
-xj = vector element
-yi = 0 h 1 / neg h pos
+TO DO
+NORMALISATION
+TESTING
 '''
