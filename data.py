@@ -5,41 +5,36 @@ from collections import Counter
 class LoadData:
 
     def __init__(self):
-        self.url = self.link()
-        self.mostCommonWords = 215  # input('Enter m (Most common words to keep): ')
+        self.path = self.link()
+        self.mostCommonWords = 175  # input('Enter m (Most common words to keep): ')
         self.discardFirstWords = 15  # input('Enter n (Most common words to discard [n < m]): ')
 
     def link(self):
-        url = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb'  # input("Enter 'aclImdb' folder path: ")
-        return url
+        path = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb'  # input("Enter 'aclImdb' folder path: ")
+        return path
 
     def read_train(self):
-        return self.url + '\\train'
+        return self.path + '\\train'
 
     def read_test(self):
-        return self.url + '\\test'
+        return self.path + '\\test'
 
     def getVector(self, data, ctype):   # Returns vector of vectors
         if data == 'test':
-            url = self.read_test()+'\\'
+            path = self.read_test()+'\\'
         elif data == 'train':
-            url = self.read_train()+'\\'
+            path = self.read_train()+'\\'
         else:
             return
-        ls = []
         vectors = []
-        vector = []
         f = []
-        monitor = 0
-        for (dirpath, folders, files) in walk(url+ctype):
+        for (dirpath, folders, files) in walk(path+ctype):
             f.extend(files)
         for j in f:
-            monitor+=1
-            #print(monitor)
-            ls.clear()
+            ls = []
             vector = []
-            dc = open(self.url + '\\' + 'dictionary.txt', encoding="utf-8")
-            ls.extend(self.read_file(url + ctype + '\\' + j))
+            dc = open(self.path + '\\' + 'dictionary.txt', encoding="utf-8")
+            ls.extend(self.read_file(path + ctype + '\\' + j))
             line = dc.readline().strip()
             while line:
                 if line in ls:
@@ -55,7 +50,7 @@ class LoadData:
         return vectors
 
     def createDictionary(self):
-        if not path.exists(self.url+'\\'+'dictionary.txt'):
+        if not path.exists(self.path + '\\' + 'dictionary.txt'):
             w = ['neg', 'pos']
             words = []
             for i in w:
@@ -67,13 +62,13 @@ class LoadData:
             cw = Counter(wordsCount)
             cw = cw.most_common(self.mostCommonWords)[self.discardFirstWords:]
             ww = [w[0] for w in cw]
-            with open(self.url+'\\'+'dictionary.txt', "w", encoding="utf-8") as file:
+            with open(self.path + '\\' + 'dictionary.txt', "w", encoding="utf-8") as file:
                 for i in ww:
                     file.write(i+"\n")
 
-    def read_file(self, url):
+    def read_file(self, path):
         ls = []
-        file = open(url, "r", encoding="utf-8")
+        file = open(path, "r", encoding="utf-8")
         line = file.readline().strip()
         while line:
             ls.extend(line.split())
@@ -81,10 +76,10 @@ class LoadData:
         file.close()
         return ls
 
-    def get_external(self, url):
+    def get_external(self, path):
         vector = []
-        dc = open(self.url + '\\' + 'dictionary.txt', encoding="utf-8")
-        ls = self.read_file(url)
+        dc = open(self.path + '\\' + 'dictionary.txt', encoding="utf-8")
+        ls = self.read_file(path)
         line = dc.readline().strip()
         while line:
             if line in ls:
