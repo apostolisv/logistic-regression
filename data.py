@@ -6,8 +6,8 @@ class LoadData:
 
     def __init__(self):
         self.path = self.link()
-        self.mostCommonWords = 175  # input('Enter m (Most common words to keep): ')
-        self.discardFirstWords = 15  # input('Enter n (Most common words to discard [n < m]): ')
+        self.mostCommonWords = 124  # input('Enter m (Most common words to keep): ')
+        self.discardFirstWords = 24  # input('Enter n (Most common words to discard [n < m]): ')
 
     def link(self):
         path = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb'  # input("Enter 'aclImdb' folder path: ")
