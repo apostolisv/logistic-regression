@@ -8,7 +8,7 @@ from scipy.special import expit
 
 # Global variables
 
-l_value = 2048.0
+l_value = 64.0
 m = 0
 train1 = []
 train0 = []
@@ -37,16 +37,16 @@ def train():
     train0.extend(data.getVector('train', 'neg'))
     data_vector = train0 + train1
     random.shuffle(data_vector)
-    dev_data = data_vector[int(len(data_vector) * 70 / 100):]   # train:dev split
-    data_vector = data_vector[:int(len(data_vector) * 70 / 100)]
+    dev_data = data_vector[int(len(data_vector) * 60 / 100):]   # train:dev split
+    data_vector = data_vector[:int(len(data_vector) * 60 / 100)]
     m = len(data_vector)
     #input('press ENTER to train')
     print('Calculating weights...')
-    for i in range(5):
+    for i in range(1):
         weights = np.zeros((len(data_vector[0]) - 1))
         sgd()
     print('selecting best performing model...')
-    select_model()
+    #select_model()
 
 
 def test():
@@ -61,11 +61,11 @@ def test():
     data_vector = test0 + test1
     random.shuffle(data_vector)
     #input('press ENTER to test')
-    for i in range(m):
-        if abs(logistic_function(data_vector[i], weights) - evaluate(i)) > 0.5:
+    for i in range(len(data_vector)):
+        if int(logistic_function(data_vector[i], weights)+0.5) != evaluate(i):
             error_count += 1
     error_rate = "Success rate: {e:.2f}%"
-    print(error_rate.format(e=100.0-(error_count / len(data_vector) * 100)))
+    print(error_rate.format(e=100 - error_count / len(data_vector) * 100))
 
 
 def test_external():
@@ -98,18 +98,18 @@ def single_cost(x):
     reg_value *= l_value/(2*m)
     h = logistic_function(data_vector[x], weights)
     y = evaluate(x)
-    return -(y * np.log10(h) + (1-y) * np.log10(1-h) + reg_value)
+    return -(y * np.log10(h) + (1-y) * np.log10(1-h)) + reg_value
 
 
 def sgd():            # Stochastic Gradient Descent
     global weights, data_vector, l_value, weights_history, l_value
-    l_value = l_value/4
+    l_value = l_value/2
     iterations = 0
-    max_iterations = 5
+    max_iterations = 15
     cost_history = [-1, 0]
-    a = 0.01  # learning rate
+    a = 0.03  # learning rate
     for i in range(len(weights)):   # start with random weights
-        weights[i] = random.uniform(-1.0, 1.0)
+        weights[i] = random.uniform(-3.14, 3.14)
     while iterations < max_iterations and not converges(cost_history[0], cost_history[1]):
         iterations += 1
         print(cost(weights))
@@ -121,7 +121,7 @@ def sgd():            # Stochastic Gradient Descent
             y = evaluate(i)
             weights[0] -= a * (predicted_value - y) * data_vector[i][0]
             for k in range(1, len(weights)):   # update weights
-                weights[k] -= a * (predicted_value - y) * data_vector[i][k] + (l_value / m) * weights[k]  # Regularization
+                weights[k] -= a * ((predicted_value - y) * data_vector[i][k] + l_value/m * weights[k])  # Regularization
     weights_history.append(weights)
 
 
@@ -130,13 +130,17 @@ def evaluate(pos):
     return data_vector[pos][-1]
 
 
+def evaluate_dev(pos):
+    return dev_data[pos][-1]
+
+
 def select_model():     # Selecting model with the most accurate lambda value
     global weights, weights_history
     weights_cost = []
     for i in weights_history:
         error_count = 0
         for j in range(len(dev_data)):
-            if abs(logistic_function(dev_data[j], i) - evaluate(j)) > 0.5:
+            if abs(logistic_function(dev_data[j], i) - evaluate_dev(j)) > 0.5:
                 error_count += 1
         weights_cost.append(error_count)
     weights = weights_history[weights_cost.index(min(weights_cost))]
