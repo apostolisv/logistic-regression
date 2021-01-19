@@ -6,7 +6,7 @@ class LoadData:
 
     def __init__(self):
         self.url = self.link()
-        self.mostCommonWords = 1000  # input('Enter m (Most common words to keep): ')
+        self.mostCommonWords = 215  # input('Enter m (Most common words to keep): ')
         self.discardFirstWords = 15  # input('Enter n (Most common words to discard [n < m]): ')
 
     def link(self):
@@ -20,7 +20,6 @@ class LoadData:
         return self.url + '\\test'
 
     def getVector(self, data, ctype):   # Returns vector of vectors
-        monitor = 1
         if data == 'test':
             url = self.read_test()+'\\'
         elif data == 'train':
@@ -31,15 +30,16 @@ class LoadData:
         vectors = []
         vector = []
         f = []
+        monitor = 0
         for (dirpath, folders, files) in walk(url+ctype):
             f.extend(files)
         for j in f:
-            ls.clear()
-            vector.clear()
+            monitor+=1
             #print(monitor)
-            monitor += 1
+            ls.clear()
+            vector = []
+            dc = open(self.url + '\\' + 'dictionary.txt', encoding="utf-8")
             ls.extend(self.read_file(url + ctype + '\\' + j))
-            dc = open(self.url+'\\'+'dictionary.txt', encoding="utf-8")
             line = dc.readline().strip()
             while line:
                 if line in ls:
@@ -52,7 +52,6 @@ class LoadData:
             else:
                 vector.append(1)
             vectors.append(vector)
-        dc.close()
         return vectors
 
     def createDictionary(self):
@@ -82,8 +81,7 @@ class LoadData:
         file.close()
         return ls
 
-
-    def getExternal(self, url):
+    def get_external(self, url):
         vector = []
         dc = open(self.url + '\\' + 'dictionary.txt', encoding="utf-8")
         ls = self.read_file(url)
