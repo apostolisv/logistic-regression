@@ -5,10 +5,11 @@ import numpy as np
 from data import LoadData
 from scipy.special import expit
 
+np.seterr(divide='ignore', invalid='ignore')    # ignore warnings caused by extreme values of random starting weights
 
 # Global variables
 
-l_value = [64, 4, 0.5]
+l_value = [8, 1.4]
 m = 0
 train1 = []
 train0 = []
@@ -68,8 +69,7 @@ def test():
     print(error_rate.format(e=100 - error_count / len(data_vector) * 100))
 
 
-def test_external():
-    path = input('Enter .txt file path\n').strip()
+def test_external(path):
     vector = data.get_external(path)
     vector.append(-1)
     prediction = logistic_function(vector, weights) * 100
@@ -86,7 +86,7 @@ def cost(w, l_val):
     for i in range(m):
         h = logistic_function(data_vector[i], w)
         y = evaluate(i)
-        total += y * np.log10(h) + (1 - y) * np.log10(1 - h)
+        total += y * np.log(h) + (1 - y) * np.log(1 - h)
     return -total/m + reg_value
 
 
@@ -97,7 +97,7 @@ def single_cost(x, l_val):
     reg_value *= l_val/(2*m)
     h = logistic_function(data_vector[x], weights)
     y = evaluate(x)
-    return (-y * np.log10(h) - (1-y) * np.log10(1-h)) + reg_value
+    return (-y * np.log(h) - (1-y) * np.log(1-h)) + reg_value
 
 
 def sgd():            # Stochastic Gradient Descent
@@ -120,7 +120,7 @@ def sgd():            # Stochastic Gradient Descent
                 y = evaluate(i)
                 weights[0] -= a * (predicted_value - y) * data_vector[i][0]
                 for k in range(1, len(weights)):   # update weights
-                    weights[k] -= a * ((predicted_value - y) * data_vector[i][k] - l_val/m * weights[k])  # Regularization
+                    weights[k] -= a * ((predicted_value - y) * data_vector[i][k] - l_val/m * weights[k])    # Regularization
         weights_history.append(weights)
 
 
@@ -153,7 +153,11 @@ def converges(old, new):
 
 def logistic_regression():
     train()
-    test()
+    test_external('C:\\Users\\Apostolis\\Desktop\\1.txt')
+    test_external('C:\\Users\\Apostolis\\Desktop\\2.txt')
+    test_external('C:\\Users\\Apostolis\\Desktop\\3.txt')
+    test_external('C:\\Users\\Apostolis\\Desktop\\4.txt')
+    test_external('C:\\Users\\Apostolis\\Desktop\\5.txt')
 
 
 

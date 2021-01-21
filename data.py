@@ -6,8 +6,8 @@ class LoadData:
 
     def __init__(self):
         self.path = self.link()
-        self.mostCommonWords = 128  # input('Enter m (Most common words to keep): ')
-        self.discardFirstWords = 16  # input('Enter n (Most common words to discard [n < m]): ')
+        self.mostCommonWords = 260  # input('Enter m (Most common words to keep): ')
+        self.discardFirstWords = 30  # input('Enter n (Most common words to discard [n < m]): ')
 
     def link(self):
         path = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb'  # input("Enter 'aclImdb' folder path: ")
@@ -60,11 +60,14 @@ class LoadData:
                     words.extend(self.read_file(self.read_train()+'\\'+i+'\\'+j))
             wordsCount = (w for w in words)
             cw = Counter(wordsCount)
-            cw = cw.most_common(self.mostCommonWords)[self.discardFirstWords:]
+            cw = cw.most_common(self.mostCommonWords)[self.discardFirstWords-1:]
             ww = [w[0] for w in cw]
             with open(self.path + '\\' + 'dictionary.txt', "w", encoding="utf-8") as file:
+                ignore = ['!', '.', ',', ';', '-', '_', '?', '>', '\\', '/', '|', ':']
                 for i in ww:
-                    file.write(i+"\n")
+                    i = ''.join(char for char in i if char not in ignore).strip()
+                    if len(i) > 0:
+                        file.write(i.lower()+"\n")
 
     def read_file(self, path):
         ls = []
