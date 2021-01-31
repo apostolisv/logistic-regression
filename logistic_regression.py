@@ -156,7 +156,7 @@ def evaluate_dev(pos):
     return dev_data[pos][-1]
 
 
-def select_model():     # Selecting model with the best performing lambda/threshold value
+def select_model():     # Selecting model with the best performing lambda value
     global weights, weights_history
     weights_cost = []
     for i in weights_history:
