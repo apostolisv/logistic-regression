@@ -28,6 +28,7 @@ class LoadData:
             return
         vectors = []
         f = []
+        ignore = ['!', '.', ',', ';', '-', '_', '?', '>', '\\', '/', '|', ':']
         for (dirpath, folders, files) in walk(path+ctype):
             f.extend(files)
         for j in f:
@@ -36,12 +37,14 @@ class LoadData:
             dc = open(self.path + '\\' + 'dictionary.txt', encoding="utf-8")
             ls.extend(self.read_file(path + ctype + '\\' + j))
             line = dc.readline().strip()
+            line = ''.join(char for char in line if char not in ignore)
             while line:
                 if line in ls:
                     vector.append(1)
                 else:
                     vector.append(0)
                 line = dc.readline().strip()
+                line = ''.join(char for char in line if char not in ignore)
             if ctype == 'neg':
                 vector.append(0)
             else:
