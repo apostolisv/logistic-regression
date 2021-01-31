@@ -10,7 +10,7 @@ class LoadData:
         self.discardFirstWords = 15  # input('Enter n (Most common words to discard [n < m]): ')
 
     def link(self):
-        path = 'C:\\Users\\Apostolis\\Desktop\\aiHW\\aclImdb'  # input("Enter 'aclImdb' folder path: ")
+        path = input("Enter 'aclImdb' folder path: ")
         return path
 
     def read_train(self):
