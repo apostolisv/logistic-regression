@@ -78,7 +78,7 @@ def test():     # test
                 true_positives += 1
         else:
             if evaluate(i) == 1:
-                false_negatives += 1;
+                false_negatives += 1
             else:
                 true_negatives += 1
     pos_precision = true_positives/(true_positives+false_positives)
@@ -90,7 +90,6 @@ def test():     # test
     print("Accuracy: ", (true_negatives + true_positives) / len(data_vector) * 100, "%")
     print("Precision: ", precision * 100, "%")
     print("Recall: ", recall * 100, "%")
-
 
 
 def test_external(path):    # test external comment
@@ -194,7 +193,7 @@ def get_stats():
                     true_positives += 1
             else:
                 if evaluate(i) == 1:
-                    false_negatives += 1;
+                    false_negatives += 1
                 else:
                     true_negatives += 1
         train_accuracy.append((true_negatives + true_positives) / len(data_vector))
@@ -210,7 +209,7 @@ def get_stats():
                     true_positives += 1
             else:
                 if evaluate_dev(i) == 1:
-                    false_negatives += 1;
+                    false_negatives += 1
                 else:
                     true_negatives += 1
         dev_accuracy.append((true_negatives + true_positives) / len(dev_data))
@@ -256,5 +255,6 @@ def logistic_regression():
     #test()
     #get_stats()
     return
+
 
 logistic_regression()
