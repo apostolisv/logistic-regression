@@ -35,9 +35,7 @@ def logistic_function(x, w):   # sigmoid function
 def train(train_total):        # train
     global train0, train1, m, data_vector, weights, dev_data, temp
     if len(temp) == 0:
-        input('press ENTER to create dictionary')
         data.createDictionary()
-        input('press ENTER to load training data')
         print('Loading positive train data...')
         train1.extend(data.getVector('train', 'pos'))
         print('Loading negative train data...')
@@ -47,7 +45,6 @@ def train(train_total):        # train
     dev_data = temp[int(len(temp) * train_total / 100):]   # train:dev split
     data_vector = temp[:int(len(temp) * train_total / 100)]
     m = len(data_vector)
-    input('press ENTER to train')
     print('Calculating weights...')
     weights = np.zeros((len(data_vector[0]) - 1))
     sgd()
@@ -62,14 +59,12 @@ def test():     # test
     false_positives = 0
     true_negatives = 0
     false_negatives = 0
-    input('press ENTER to load testing data')
     print('Loading positive testing data...')
     test1 = data.getVector('test', 'pos')
     print('Loading negative testing data...')
     test0 = data.getVector('test', 'neg')
     data_vector = test0 + test1
     random.shuffle(data_vector)
-    input('press ENTER to test')
     for i in range(len(data_vector)):
         if logistic_function(data_vector[i], weights) >= 0.50:
             if evaluate(i) == 0:
